@@ -1,5 +1,6 @@
 package com.zhangyc.ipcclient;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -7,13 +8,19 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.database.Cursor;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.IBinder;
+import android.os.Message;
+import android.os.Messenger;
 import android.os.RemoteException;
 import android.util.Log;
 import android.view.View;
 
+import com.blankj.utilcode.util.IntentUtils;
 import com.blankj.utilcode.util.NetworkUtils;
 import com.zhangyc.ipc.IMyAidlTest;
 
@@ -29,28 +36,71 @@ public class ClientMainActivity extends AppCompatActivity {
 
     public static final String TAG = ClientMainActivity.class.getSimpleName();
 
+    private Messenger mMessengerServer;
+    private Handler mHandlerClient;
+
+    static class Handler extends android.os.Handler {
+
+        @Override
+        public void handleMessage(@NonNull Message msg) {
+            super.handleMessage(msg);
+            switch (msg.what) {
+                case 1:
+                    Log.i(TAG, "handleMessage: 1");
+                    break;
+                case 2:
+                    Log.i(TAG, "handleMessage: 2");
+                    break;
+            }
+        }
+    }
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        Intent intent = new Intent();
-        intent.setAction("com.zhangyc.ipc.aidl");
-        intent.setPackage("com.zhangyc.ipc");
-        bindService(intent, new ServiceConnection() {
+        mHandlerClient = new Handler();
+
+        Cursor query = getContentResolver().query(Uri.parse("content://com.zhangyc.ipc.provider"), null, null, null, null);
+        Log.i(TAG, "onCreate: " + query);
+        if (query != null) {
+            query.close();
+        }
+
+
+        Intent componentIntent = IntentUtils.getComponentIntent("com.zhangyc.ipc", "com.zhangyc.ipc.AidlService");
+//        Intent componentIntent = new Intent();
+//        componentIntent.setAction("com.zhangyc.ipc.aidl");
+//        componentIntent.setPackage("com.zhangyc.ipc");
+        bindService(componentIntent, new ServiceConnection() {
             @Override
             public void onServiceConnected(ComponentName name, IBinder service) {
-                IMyAidlTest iMyAidlTest = IMyAidlTest.Stub.asInterface(service);
+                /*IMyAidlTest iMyAidlTest = IMyAidlTest.Stub.asInterface(service);
                 try {
                     Log.i(TAG, "onServiceConnected: " + iMyAidlTest.getTestString());
                 } catch (RemoteException e) {
                     e.printStackTrace();
                     Log.e(TAG, "onServiceConnected: " + e.getLocalizedMessage());
+                }*/
+
+                 Log.i(TAG, "onServiceConnected: ");
+                mMessengerServer = new Messenger(service);
+                Message obtain = Message.obtain();
+                obtain.what = 2;
+                obtain.replyTo = new Messenger(mHandlerClient);
+                try {
+                    mMessengerServer.send(obtain);
+                } catch (RemoteException e) {
+                    e.printStackTrace();
+                    Log.i(TAG, "onServiceConnected: " + e.getLocalizedMessage());
                 }
             }
 
             @Override
             public void onServiceDisconnected(ComponentName name) {
+                Log.i(TAG, "onServiceDisconnected: " + name.getClassName());
 
             }
         }, Context.BIND_AUTO_CREATE);
@@ -80,6 +130,9 @@ public class ClientMainActivity extends AppCompatActivity {
                 }
             }
         }).start();
+
+
+
 
     }
 

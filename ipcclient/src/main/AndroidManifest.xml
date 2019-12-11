@@ -3,7 +3,9 @@
     package="com.zhangyc.ipcclient">
 
     <uses-permission android:name="android.permission.INTERNET" />
-    <permission android:name="com.zhangyc.aidl"/>
+    <uses-permission android:name="com.zhangyc.aidl.SERVICEAILD" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
 
     <application
         android:allowBackup="true"

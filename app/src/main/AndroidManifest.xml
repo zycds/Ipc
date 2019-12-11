@@ -4,6 +4,12 @@
     package="com.zhangyc.ipc">
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+
+    <permission android:name="com.zhangyc.aidl.SERVICEAILD"
+        android:protectionLevel="normal"/>
+
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -25,11 +31,18 @@
         <!--   : 该应用的私有进程              不加 ：  全局进程-->
         <!--  android:exported="true" 支持外部应用打开 -->
         <service android:name=".AidlService" android:exported="true"
-            android:permission="com.zhangyc.aidl">
+            android:permission="com.zhangyc.aidl.SERVICEAILD">
             <intent-filter>
                 <action android:name="com.zhangyc.ipc.aidl"/>
             </intent-filter>
         </service>
+
+        <provider
+            android:authorities="com.zhangyc.ipc.provider"
+            android:name=".MyContentProvider"
+            android:permission="com.zhangyc.aidl.SERVICEAILD"
+            android:exported="true"
+            />
     </application>
 
 </manifest>

@@ -2,20 +2,15 @@ package com.zhangyc.ipc;
 
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Looper;
-import android.os.Message;
-import android.os.Messenger;
-import android.os.RemoteException;
 import android.util.Log;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
 
 import com.blankj.utilcode.util.NetworkUtils;
+import com.zhangyc.imageloader.ImageLoader;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -38,6 +33,9 @@ public class BundleActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_bundle);
         Log.i(TAG, "onCreate: ");
+
+        ImageLoader.Companion.getInstance().load(R.drawable.ic_launcher_background);
+
         final ExecutorService executorService = Executors.newCachedThreadPool();
 
         Bundle bundleKey = getIntent().getBundleExtra("bundleKey");
@@ -79,6 +77,8 @@ public class BundleActivity extends AppCompatActivity {
     }
 
     class Client implements Runnable {
+
+
 
         private Socket mSocket;
 

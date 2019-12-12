@@ -4,7 +4,14 @@ buildscript {
     repositories {
         google()
         jcenter()
-        
+        maven {
+            url 'https://dl.bintray.com/ds520/maven'
+            credentials {
+                username = "zcyds"
+                password = "f8a72c371a5086cc90d085be36f365500d737990"
+            }
+
+        }
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:3.4.2'
@@ -18,7 +25,16 @@ allprojects {
     repositories {
         google()
         jcenter()
-        
+//        maven {
+//            url 'file://H://work_demo//JetpackDemo//respository'
+//        }
+        maven {
+            url 'https://dl.bintray.com/ds520/maven'
+            credentials {
+                username = "zcyds"
+                password = "f8a72c371a5086cc90d085be36f365500d737990"
+            }
+        }
     }
 }
 
